@@ -1,0 +1,24 @@
+<resources>
+  <string name="app_name" translatable="false">Stock Hawk</string>
+<string name="google_app_id">com.example.beetel.stockhawk</string>
+  <string name="action_example">Example action</string>
+<string name="stockStatus" translatable="false">Stock Status</string>
+  <string name="action_settings" translatable="false">Settings</string>
+  <string name="action_change_units" translatable="true">Change Units</string>
+  <string name="add_symbol">Add a Symbol</string>
+  <string name="content_test">Search for a Stock Symbol</string>
+  <string name="agree" translatable="true">OK</string>
+  <string name="disagree" translatable="true">CANCEL</string>
+    <string name="try_again" translatable="true">Try Again!!</string>
+  <string name="input_hint" translatable="false">FB/MSFT/GOOG</string>
+  <string name="input_prefill"/>
+  <string name="data_unavailable" translatable="true">Stocks Data not available</string>
+  <!--<string name="status_ok"translatable="true"></string>-->
+  <string name="offline" translatable="true">You are currently offline </string>
+<string name="already_saved" translatable="true">This Stock is already saved!!</string>
+  <string name="network_toast" translatable="true">Uh-oh! This app requires an internet connection</string>
+<string name="no_stocks_title">No stocks found</string>
+  <string name="no_stocks_msg" translatable="true">Tap + to add a new stock</string>
+    <string name="no_connection_title" translatable="true">Opps something went wrong!!!</string>
+    <string name="no_connection_msg" translatable="true">No internet connection found.Check your connection and Try Again</string>
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:gpb="https://github.com/jpardogo/GoogleProgressBar"
+    android:id="@+id/coordinate_layout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_stock_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/stock_list_content"
+        />
+    <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
+        android:id="@+id/google_progress"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        gpb:type="folding_circles"
+        android:visibility="gone"/>
+    <include layout="@layout/empty_state_no_connection"/>
+<include layout="@layout/empty_state_no_stocks"/>
+    <!--<ProgressBar-->
+        <!--android:layout_width=""-->
+        <!--android:layout_height="" />-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+  <com.melnykov.fab.FloatingActionButton
+      android:id="@+id/fab"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|right"
+      android:layout_margin="16dp"
+      android:src="@drawable/ic_add_white_24dp"
+      fab:fab_colorNormal="@color/material_blue_500"
+      fab:fab_colorPressed="@color/material_blue_600"
+      fab:fab_colorRipple="@color/ripple"
+      fab:fab_shadow="true"
+      fab:fab_type="normal"
+      fab:layout_anchor="recycler_view"
+      fab:layout_anchorGravity="bottom | end"
+      />
+</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
