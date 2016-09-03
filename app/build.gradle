@@ -7,7 +7,7 @@ android {
 
   defaultConfig {
     applicationId "com.example.beetel.stockhawk"
-    minSdkVersion 21
+    minSdkVersion 19
     targetSdkVersion 23
     versionCode 3
     versionName "3.1"
@@ -25,7 +25,7 @@ repositories {
 }
 
 dependencies {
-
+    compile 'com.android.support:appcompat-v7:23.3.0'
   compile 'com.google.android.gms:play-services-gcm:8.1.0'
   compile 'com.squareup.okhttp:okhttp:2.5.0'
   compile'com.github.lecho:hellocharts-library:1.5.8@aar'
@@ -35,11 +35,13 @@ dependencies {
   compile'com.android.support:recyclerview-v7:23.3.0'
   compile'com.android.support:support-v4:23.3.0'
     compile 'com.jpardogo.googleprogressbar:library:+'
+    compile 'net.simonvt.schematic:schematic:0.6.3'
   apt 'net.simonvt.schematic:schematic-compiler:0.6.3'
-  compile 'net.simonvt.schematic:schematic:0.6.3'
-  compile 'com.melnykov:floatingactionbutton:1.2.0'
+
+//  compile 'com.melnykov:floatingactionbutton:1.2.0'
   compile 'com.android.support:design:23.3.0'
   compile('com.github.afollestad.material-dialogs:core:0.8.5.7@aar') {
     transitive = true
   }
+
 }

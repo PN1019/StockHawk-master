@@ -192,6 +192,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             PeriodicTask periodicTask = new PeriodicTask.Builder()
                     .setService(StockTaskService.class)
                     .setPeriod(period)
+                    .setPersisted(true)
                     .setFlex(flex)
                     .setTag(StockTaskService.TAG_PERIODIC)
                     .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
@@ -313,7 +314,7 @@ public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         sprogressBar.setVisibility(View.GONE);
         mCursorAdapter.swapCursor(data);
         if (mCursorAdapter.getItemCount() == 0) {
-        if (!isConnected) {
+        if (!isConnectionAvailableOrNot(this)) {
         sEmptyStateNoConnection.setVisibility(View.VISIBLE);
         } else {
 
@@ -324,7 +325,7 @@ public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         sEmptyStateNoStocks.setVisibility(View.GONE);
         }
 
-        if (isConnectionAvailableOrNot(this)) {
+        if (!isConnectionAvailableOrNot(this)) {
         Snackbar.make(sCoordinatorLayout, getString(R.string.offline), Snackbar.LENGTH_INDEFINITE).setAction(R.string.try_again, new View.OnClickListener() {
 @Override
 public void onClick(View v) {

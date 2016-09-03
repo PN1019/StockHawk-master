@@ -1,11 +1,12 @@
 <resources>
   <string name="app_name" translatable="false">Stock Hawk</string>
-<string name="google_app_id">com.example.beetel.stockhawk</string>
+<string name="google_app_id_sh">com.example.beetel.stockhawk</string>
   <string name="action_example">Example action</string>
 <string name="stockStatus" translatable="false">Stock Status</string>
   <string name="action_settings" translatable="false">Settings</string>
   <string name="action_change_units" translatable="true">Change Units</string>
-  <string name="add_symbol">Add a Symbol</string>
+  <string name="add_symbol" translatable="true">Add a Symbol</string>
+  <string name="add_stock_quote" translatable="true">Add a new stock quote</string>
   <string name="content_test">Search for a Stock Symbol</string>
   <string name="agree" translatable="true">OK</string>
   <string name="disagree" translatable="true">CANCEL</string>
