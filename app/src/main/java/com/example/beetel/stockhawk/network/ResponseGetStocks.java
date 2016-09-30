@@ -16,7 +16,7 @@ public List<StockQuote>getStockQuotes(){
     List<StockQuote> result=new ArrayList<>();
     List<StockQuote>stockQuotes=sResults.getQuote().getStockQuotes();
     for (StockQuote  stockQuote:stockQuotes){
-        if(stockQuote.getBid()!=null&&stockQuote.getChangeInPercent()!=null&&stockQuote.getChange()!=null){
+        if(stockQuote.getBid()!=null && stockQuote.getChangeInPercent()!=null && stockQuote.getChange()!=null){
             result.add(stockQuote);
         }
     }

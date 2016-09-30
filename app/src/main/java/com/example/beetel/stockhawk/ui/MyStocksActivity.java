@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -55,6 +56,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     public static final int CHANGE_UNIT_PERCENTAGES = 1;
     private final String EXTRA_CHANGE_UNITS = "EXTRA_CHANGE_UNITS";
     private final String EXTRA_ADD_DIALOG_OPENED = "EXTRA_ADD_DIALOG_OPENED";
+    private boolean mTwoPane;
     private CharSequence mTitle;
     private Intent mServiceIntent;
     private ItemTouchHelper mItemTouchHelper;
@@ -235,18 +237,21 @@ public void onSaveInstanceState(Bundle savedState) {
     @OnClick(R.id.fab)
     public void showDialogForAddingStocks() {
         if (isConnectionAvailableOrNot(this)) {
-            materialDialog = new MaterialDialog.Builder(this).title(R.string.add_symbol)
-                    .inputType(InputType.TYPE_CLASS_TEXT)
-                    .autoDismiss(true)
-                    .positiveText(R.string.agree)
-                    .negativeText(R.string.disagree)
-                    .input(R.string.input_hint, R.string.input_prefill, false, new MaterialDialog.InputCallback() {
-                        @Override
-                        public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                            addQuote(input.toString());
-                        }
-                    }).build();
-            materialDialog.show();
+            if (materialDialog==null)
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                materialDialog = new MaterialDialog.Builder(this).title(R.string.add_symbol)
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .autoDismiss(true)
+                        .positiveText(R.string.agree)
+                        .negativeText(R.string.disagree)
+                        .input(R.string.input_hint, R.string.input_prefill, false, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                addQuote(input.toString());
+                            }
+                        }).build();
+                materialDialog.show();
+            }
         } else {
             Snackbar.make(sCoordinatorLayout, getString(R.string.no_connection_msg), Snackbar.LENGTH_LONG).setAction(R.string.try_again, new View.OnClickListener() {
                 @Override

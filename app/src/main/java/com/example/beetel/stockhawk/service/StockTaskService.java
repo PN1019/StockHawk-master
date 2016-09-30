@@ -1,6 +1,6 @@
 package com.example.beetel.stockhawk.service;
 
-        import android.content.ContentProviderOperation;
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -14,17 +14,18 @@ import com.example.beetel.stockhawk.data.QuoteColumns;
 import com.example.beetel.stockhawk.data.QuoteProvider;
 import com.example.beetel.stockhawk.data.QuotesHistoricalDataColumns;
 import com.example.beetel.stockhawk.network.ResponseGetHistoricalData;
+import com.example.beetel.stockhawk.network.ResponseGetStock;
 import com.example.beetel.stockhawk.network.ResponseGetStocks;
 import com.example.beetel.stockhawk.network.StockQuote;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.google.gson.Gson;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Locale;
 
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -63,50 +65,62 @@ public class StockTaskService extends GcmTaskService{
     private Context mContext;
     private StringBuilder mStoredSymbols = new StringBuilder();
     private boolean isUpdate;
-
+@SuppressWarnings("unused")
     public StockTaskService(){}
 
     public StockTaskService(Context context){
         mContext = context;
     }
 
-    String fetchData(String url) throws IOException{
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
+//    String fetchData(String url) throws IOException{
+//        Request request = new Request.Builder()
+//                .url(url)
+//                .build();
+//
+//        Response response = client.newCall(request).execute();
+//        return response.body().string();    }
 
-        Response response = client.newCall(request).execute();
-        return response.body().string();
-    }
 
     @Override
     public int onRunTask(TaskParams params) {
-        Cursor initQueryCursor;
+//        Cursor initQueryCursor;
         if (mContext == null) {
             return GcmNetworkManager.RESULT_FAILURE;
         }
-        StringBuilder urlStringBuilder = new StringBuilder();
+//        StringBuilder urlStringBuilder = new StringBuilder();
         try {
-            Retrofit retrofit = new
-                    Retrofit.Builder()
+            Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(StockDbService.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    // .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create(new Gson()))
                     .build();
             StockDbService service = retrofit.create(StockDbService.class);
-            String query = "select * from yahoo.finance.quotes where symbol in(" + buildUrl(params) + ")";
+            String multiple_stocks_query = "select * from yahoo.finance.quotes where symbol in(" + buildUrl(params) + ")";
+            String single_stock_query="select * from yahoo.finance.quote where symbol in ("+buildUrl(params)+")";
+            //for multiple stocks
             if (params.getTag().equals(StockIntentService.ACTION_INIT)) {
-                Call<ResponseGetStocks> call = service.getStock(query);
-                retrofit2.Response<ResponseGetStocks>response = call.execute();
-                ResponseGetStocks responseGetStocks = response.body();
+
+                Call<ResponseGetStocks> responseGetStocksCall = service.getStocks(multiple_stocks_query);
+                Response<ResponseGetStocks> responseGetStocksResponse = responseGetStocksCall.execute();
+                ResponseGetStocks responseGetStocks = responseGetStocksResponse.body();
                 saveQuotes2Database(responseGetStocks.getStockQuotes());
+            }
+            //for single stocks
+            else {
+                Call<ResponseGetStock> responseGetStockCall = service.getStock(single_stock_query);
+                Response<ResponseGetStock> responseGetStockResponse = responseGetStockCall.execute();
+                ResponseGetStock responseGetStock = responseGetStockResponse.body();
+                saveQuotes2Database(responseGetStock.getStockQuotes());
 
             }
             return GcmNetworkManager.RESULT_SUCCESS;
+        }
+        catch (SocketTimeoutException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
         } catch (IOException | RemoteException | OperationApplicationException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             return GcmNetworkManager.RESULT_FAILURE;
         }
+        return 0;
     }
     // Base URL for the Yahoo query
 //      urlStringBuilder.append("https://query.yahooapis.com/v1/public/yql?q=");
