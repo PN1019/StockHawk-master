@@ -22,4 +22,9 @@
   <string name="no_stocks_msg" translatable="true">Tap + to add a new stock</string>
     <string name="no_connection_title" translatable="true">Opps something went wrong!!!</string>
     <string name="no_connection_msg" translatable="true">No internet connection found.Check your connection and Try Again</string>
+  <string name="stock_detail_title">Stock</string>
+  <string name="stock_detail_of_Days">5DAYS</string>
+  <string name="stock_detail_of_Weeks">2WEEKS</string>
+  <string name="stock_detail_of_Month">1MONTH</string>
+  <string name="stock_detail_tab_header_for_stocks">NASDAQ:%1$s</string>
 </resources>

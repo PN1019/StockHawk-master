@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -54,19 +53,9 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
      */
     public static final int CHANGE_UNITS_DOLLARS = 0;
     public static final int CHANGE_UNIT_PERCENTAGES = 1;
+    private static final int CURSOR_LOADER_ID = 0;
     private final String EXTRA_CHANGE_UNITS = "EXTRA_CHANGE_UNITS";
     private final String EXTRA_ADD_DIALOG_OPENED = "EXTRA_ADD_DIALOG_OPENED";
-    private boolean mTwoPane;
-    private CharSequence mTitle;
-    private Intent mServiceIntent;
-    private ItemTouchHelper mItemTouchHelper;
-    private static final int CURSOR_LOADER_ID = 0;
-    private QuoteCursorAdapter mCursorAdapter;
-    private Context mContext;
-    private Cursor mCursor;
-    boolean isConnected;
-    private MaterialDialog materialDialog;
-    private int sChangeUnits = CHANGE_UNITS_DOLLARS;
     @Bind(R.id.rv_stock_list)
     RecyclerView sRecyclerView;
     @Bind(R.id.ll_state_no_connection)
@@ -75,10 +64,25 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     View sEmptyStateNoStocks;
     @Bind(R.id.google_progress)
     ProgressBar sprogressBar;
+    //  private Context mContext;
+    //  private Cursor mCursor;
     @Bind(R.id.coordinate_layout)
     CoordinatorLayout sCoordinatorLayout;
+    private boolean mTwoPane;
+    //   private CharSequence mTitle;
+    private Intent mServiceIntent;
+    private ItemTouchHelper mItemTouchHelper;
+    private QuoteCursorAdapter mCursorAdapter;
+    private MaterialDialog materialDialog;
+    private int sChangeUnits = CHANGE_UNITS_DOLLARS;
 //    @Bind(R.id.stock_graph_container)
 //    FrameLayout sGraphContainer;
+
+    public static boolean isConnectionAvailableOrNot(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo connectedNetwork = connectivityManager.getActiveNetworkInfo();
+        return connectedNetwork != null && connectedNetwork.isConnectedOrConnecting();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,20 +95,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             getSupportActionBar().setDisplayShowTitleEnabled(true);
         }
 
-//    mContext = this;
-//    ConnectivityManager cm =
-//        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//    isConnected = activeNetwork != null &&
-//        activeNetwork.isConnectedOrConnecting();
-//    setContentView(R.layout.activity_my_stocks);
+        if (findViewById(R.id.stock_graph_container) != null) {
+            mTwoPane = true;
+        }
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
-        mServiceIntent = new Intent(this, StockIntentService.class);
+
         if (savedInstanceState == null) {
             // Run the initialize task service so that some stocks appear upon an empty database
-
+            mServiceIntent = new Intent(this, StockIntentService.class);
             mServiceIntent.putExtra(StockIntentService.EXTRA_TAG, StockIntentService.ACTION_INIT);
             if (isConnectionAvailableOrNot(this)) {
                 startService(mServiceIntent);
@@ -127,58 +126,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     sRecyclerView.setAdapter(mCursorAdapter);
 
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-//
-//        mCursorAdapter = new QuoteCursorAdapter(this, null);
-//        recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
-//                new RecyclerViewItemClickListener.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(View v, int position) {
-//                        //TODO:
-//                        // do something on item click
-//                    }
-//                }));
-//        recyclerView.setAdapter(mCursorAdapter);
-//
-//
-////        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-////        fab.attachToRecyclerView(recyclerView);
-////        fab.setOnClickListener(new View.OnClickListener() {
-////            @Override
-////            public void onClick(View v) {
-////                if (isConnected) {
-////                    new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
-////                            .content(R.string.content_test)
-////                            .inputType(InputType.TYPE_CLASS_TEXT)
-////                            .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
-////                                @Override
-////                                public void onInput(MaterialDialog dialog, CharSequence input) {
-////                                    // On FAB click, receive user input. Make sure the stock doesn't already exist
-////                                    // in the DB and proceed accordingly
-////                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-////                                            new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
-////                                            new String[]{input.toString()}, null);
-////                                    if (c.getCount() != 0) {
-////                                        Toast toast =
-////                                                Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
-////                                                        Toast.LENGTH_LONG);
-////                                        toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
-////                                        toast.show();
-////                                        return;
-////                                    } else {
-////                                        // Add the stock to DB
-////                                        mServiceIntent.putExtra("tag", "add");
-////                                        mServiceIntent.putExtra("symbol", input.toString());
-////                                        startService(mServiceIntent);
-////                                    }
-////                                }
-////                            })
-////                            .show();
-////                } else {
-////                    networkToast();
-////                }
-//
-//            }
-//        });
 
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mCursorAdapter);
@@ -205,13 +152,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
         }
 
-
-    public static boolean isConnectionAvailableOrNot(Context context)
-    {
-        ConnectivityManager connectivityManager= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo connectedNetwork=connectivityManager.getActiveNetworkInfo();
-        return connectedNetwork!=null&&connectedNetwork.isConnectedOrConnecting();
-    }
     @Override
     public void onResume() {
         super.onResume();
@@ -237,8 +177,8 @@ public void onSaveInstanceState(Bundle savedState) {
     @OnClick(R.id.fab)
     public void showDialogForAddingStocks() {
         if (isConnectionAvailableOrNot(this)) {
-            if (materialDialog==null)
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            //  if (materialDialog==null)
+            //   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 materialDialog = new MaterialDialog.Builder(this).title(R.string.add_symbol)
                         .inputType(InputType.TYPE_CLASS_TEXT)
                         .autoDismiss(true)
@@ -251,7 +191,6 @@ public void onSaveInstanceState(Bundle savedState) {
                             }
                         }).build();
                 materialDialog.show();
-            }
         } else {
             Snackbar.make(sCoordinatorLayout, getString(R.string.no_connection_msg), Snackbar.LENGTH_LONG).setAction(R.string.try_again, new View.OnClickListener() {
                 @Override
@@ -367,33 +306,23 @@ public void onLoaderReset(Loader<Cursor> loader) {
                 // automatically handle clicks on the Home/Up button, so long
                 // as you specify a parent activity in AndroidManifest.xml.
                 int id = item.getItemId();
-                 switch (id) {
+                if (id == R.id.action_settings) {
                      //noinspection SimplifiableIfStatement
-                     case R.id.action_settings:
-                         return true;
-                   //  break;
+
+                    //  break;
 
 
-                     case R.id.action_change_units:
-                         // this is for changing stock changes from percent value to dollar value
-                         switch (sChangeUnits) {
-                             case CHANGE_UNITS_DOLLARS:
-                                 sChangeUnits = CHANGE_UNIT_PERCENTAGES;
-                                 mCursorAdapter.setChangeUnits(sChangeUnits);
-                                 mCursorAdapter.notifyDataSetChanged();
-                                 break;
+                    if (sChangeUnits == CHANGE_UNITS_DOLLARS) {
+                        sChangeUnits = CHANGE_UNIT_PERCENTAGES;
+                    } else {
+                        sChangeUnits = CHANGE_UNITS_DOLLARS;
 
-                             case CHANGE_UNIT_PERCENTAGES:
-                                 sChangeUnits = CHANGE_UNITS_DOLLARS;
-                                 mCursorAdapter.setChangeUnits(sChangeUnits);
-                                 mCursorAdapter.notifyDataSetChanged();
-                                 break;
+                    }
+                    // this is for changing stock changes from percent value to dollar value
+                    mCursorAdapter.setChangeUnits(sChangeUnits);
+                    mCursorAdapter.notifyDataSetChanged();
 
-                         }
-                 }
-
-
-
+                }
                 return super.onOptionsItemSelected(item);
             }
 
@@ -412,16 +341,22 @@ public void onLoaderReset(Loader<Cursor> loader) {
 
     @Override
     public void onItemClick(View v, int position) {
-      Bundle args=new Bundle();
-       Context context=v.getContext();
-//        Intent intent=new Intent(context,StockChartActivity.class);
-//        args.putString(StockChartFragment.ARG_SYMBOL,mCursorAdapter.getSymbol(position));
-//
-        StockChartFragment fragment=new StockChartFragment();
-        fragment.setArguments(args);
-        getSupportFragmentManager().beginTransaction().replace(R.id.stock_graph_container,fragment).commit();
-    }
+        if (mTwoPane) {
+            Bundle args = new Bundle();
 
+//
+            args.putString(StockChartFragment.ARG_SYMBOL, mCursorAdapter.getSymbol(position));
+
+            StockChartFragment fragment = new StockChartFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction().replace(R.id.stock_graph_container, fragment).commit();
+        } else {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, StockChartActivity.class);
+            intent.putExtra(StockChartFragment.ARG_SYMBOL, mCursorAdapter.getSymbol(position));
+            context.startActivity(intent);
+        }
+    }
 //    private boolean checkPlayServices() {
 //        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
 //        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
